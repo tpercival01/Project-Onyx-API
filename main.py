@@ -99,5 +99,10 @@ async def sync_achievements(xuid: str, title_id: str):
     sync_game_achievements.delay(xuid, title_id)
     return {"status": "queued", "message": "Achievements syncing initiated"}
 
+@app.post("/sync/refresh/{xuid}")
+async def refresh_profile(xuid: str):
+    sync_user_games.delay(xuid)
+    return {"status": "queued", "message": "Global profile sync started"}
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

@@ -7,6 +7,7 @@ from celery_app import celery_app
 from database import AsyncSessionLocal
 from models import Game, Achievement
 from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy import select
 
 @celery_app.task
 def sync_user_games(xuid: str):
@@ -55,11 +56,16 @@ async def async_sync_user_games(xuid: str):
             "last_time_played": last_played,
             "display_image": title.get("displayImage")
         })
+
+        old_game = existing_dict.get(game_id)
+        if not old_game or old_game.current_gamerscore < current_gs:
+            print(f"Chef: Detected progress in {title.get('name')}. Queuing achievement sync!")
+            sync_game_achievements.delay(xuid, game_id)
+
     if not games_to_insert: return
 
     async with AsyncSessionLocal() as db:
         stmt = insert(Game).values(games_to_insert)
-        # Upsert restores the correct Gamerscores!
         stmt = stmt.on_conflict_do_update(
             index_elements=['id'],
             set_={
