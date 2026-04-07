@@ -1,5 +1,8 @@
 # Project Onyx - Sync Engine & API (Backend)
 
+Live site: https://onyx.thomaspercival.dev/
+Frontend Repo: https://github.com/tpercival01/Project-Onyx
+
 This repository contains the asynchronous data ingestion engine for the Onyx Xbox Tracker. It is designed to safely consume the OpenXBL API, respect strict rate limits, and perform bulk upserts into a cloud PostgreSQL database without blocking the main web server.
 
 ## 🚀 Tech Stack
